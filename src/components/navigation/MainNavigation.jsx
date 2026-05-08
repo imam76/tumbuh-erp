@@ -13,7 +13,7 @@ const navLinkClass = ({ isActive }) =>
 
 export function MainNavigation() {
   return (
-    <header className="flex items-center justify-between gap-6 border-b border-slate-200 px-8 py-5 dark:border-slate-800 max-[720px]:items-start max-[720px]:flex-col max-[720px]:px-5 max-[720px]:py-[18px]">
+    <div className="flex items-center justify-between gap-6 border-b border-slate-200 px-8 py-5 dark:border-slate-800 max-[720px]:items-start max-[720px]:flex-col max-[720px]:px-5 max-[720px]:py-[18px]">
       <Link
         className="text-lg font-bold text-slate-950 no-underline dark:text-slate-100"
         to={paths.home}
@@ -28,6 +28,6 @@ export function MainNavigation() {
           Dashboard
         </NavLink>
       </nav>
-    </header>
+    </div>
   )
 }
