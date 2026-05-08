@@ -1,16 +1,31 @@
-import { Navigate, Route, Routes } from 'react-router'
+import { createBrowserRouter, Navigate } from 'react-router'
+import App from '@/App'
 import { DashboardView } from '@/views/DashboardView'
 import { HomeView } from '@/views/HomeView'
 import { NotFoundView } from '@/views/NotFoundView'
 import { paths } from '@/routes/paths'
 
-export function AppRoutes() {
-  return (
-    <Routes>
-      <Route index element={<HomeView />} />
-      <Route path="dashboard" element={<DashboardView />} />
-      <Route path="home" element={<Navigate to={paths.home} replace />} />
-      <Route path="*" element={<NotFoundView />} />
-    </Routes>
-  )
-}
+export const router = createBrowserRouter([
+  {
+    path: paths.home,
+    element: <App />,
+    children: [
+      {
+        index: true,
+        element: <HomeView />,
+      },
+      {
+        path: 'dashboard',
+        element: <DashboardView />,
+      },
+      {
+        path: 'home',
+        element: <Navigate to={paths.home} replace />,
+      },
+      {
+        path: '*',
+        element: <NotFoundView />,
+      },
+    ],
+  },
+])
