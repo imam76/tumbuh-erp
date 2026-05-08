@@ -1,8 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router'
 import App from '@/App'
-import { DashboardView } from '@/views/DashboardView'
-import { HomeView } from '@/views/HomeView'
-import { NotFoundView } from '@/views/NotFoundView'
+import { lazyRoute } from '@/routes/lazyRoute'
 import { paths } from '@/routes/paths'
 
 export const router = createBrowserRouter([
@@ -12,11 +10,11 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomeView />,
+        ...lazyRoute(() => import('@/views/HomeView'), 'HomeView'),
       },
       {
         path: 'dashboard',
-        element: <DashboardView />,
+        ...lazyRoute(() => import('@/views/DashboardView'), 'DashboardView'),
       },
       {
         path: 'home',
@@ -24,7 +22,7 @@ export const router = createBrowserRouter([
       },
       {
         path: '*',
-        element: <NotFoundView />,
+        ...lazyRoute(() => import('@/views/NotFoundView'), 'NotFoundView'),
       },
     ],
   },
