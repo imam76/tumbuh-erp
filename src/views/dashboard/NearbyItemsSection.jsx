@@ -1,4 +1,5 @@
 import { Button, Empty, Tag } from 'antd'
+import { useI18n } from '@/i18n/useI18n'
 import { ItemListingCard } from '@/views/dashboard/ItemListingCard'
 
 export function NearbyItemsSection({
@@ -13,11 +14,13 @@ export function NearbyItemsSection({
   onRequestItem,
   onToggleSave,
 }) {
+  const { t } = useI18n()
+
   return (
     <section ref={sectionRef}>
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <h2 className="m-0 text-2xl font-bold text-slate-950">
-          Barang Terbaru Sekitarmu
+          {t('dashboard.sections.nearbyItems')}
         </h2>
         <div className="flex flex-wrap items-center justify-end gap-2">
           {selectedCategoryLabel ? (
@@ -25,12 +28,12 @@ export function NearbyItemsSection({
           ) : null}
           {searchTerm ? (
             <Tag className="max-w-[240px] truncate" color="purple">
-              Pencarian: {searchTerm}
+              {t('dashboard.labels.search')}: {searchTerm}
             </Tag>
           ) : null}
           <Tag color="blue">{location}</Tag>
           <Button size="small" type="text" onClick={onChangeLocation}>
-            Ubah Lokasi
+            {t('dashboard.actions.changeLocation')}
           </Button>
         </div>
       </div>
@@ -47,10 +50,10 @@ export function NearbyItemsSection({
         </div>
       ) : (
         <div className="rounded-lg border border-dashed border-slate-200 bg-white py-12">
-          <Empty description="Tidak ada barang yang cocok">
+          <Empty description={t('dashboard.empty.noMatchingItems')}>
             {hasActiveFilters ? (
               <Button type="primary" onClick={onClearFilters}>
-                Reset Filter
+                {t('dashboard.actions.clearFilter')}
               </Button>
             ) : null}
           </Empty>

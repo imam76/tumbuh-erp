@@ -3,31 +3,31 @@ import { paths } from '@/routes/paths'
 export const sideNavigationItems = [
   {
     key: 'dashboard',
-    label: 'Dashboard',
+    labelKey: 'app.sidebar.dashboard',
     path: paths.dashboard,
     icon: 'dashboard',
   },
   {
     key: 'my-listings',
-    label: 'My Listings',
+    labelKey: 'app.sidebar.myListings',
     path: paths.myListings,
     icon: 'listings',
   },
   {
     key: 'requests',
-    label: 'Requests',
+    labelKey: 'app.sidebar.requests',
     path: paths.requests,
     icon: 'requests',
   },
   {
     key: 'impact-stats',
-    label: 'Impact Stats',
+    labelKey: 'app.sidebar.impactStats',
     path: paths.impactStats,
     icon: 'impact',
   },
   {
     key: 'saved-items',
-    label: 'Saved Items',
+    labelKey: 'app.sidebar.savedItems',
     path: paths.savedItems,
     icon: 'saved',
   },

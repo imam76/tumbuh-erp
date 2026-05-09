@@ -1,4 +1,5 @@
 import { Card, Tag } from 'antd'
+import { useI18n } from '@/i18n/useI18n'
 
 const toneClassMap = {
   blue: 'bg-sky-50 text-sky-700',
@@ -6,35 +7,38 @@ const toneClassMap = {
   amber: 'bg-amber-50 text-amber-700',
 }
 
-const requestStatusMap = {
+const requestStatusColorMap = {
   pending: {
     color: 'gold',
-    label: 'PENDING',
   },
   process: {
     color: 'blue',
-    label: 'PROSES',
   },
   completed: {
     color: 'green',
-    label: 'SELESAI',
   },
 }
 
 export function MyActivityCard({ activity }) {
+  const { t } = useI18n()
   const primaryStatuses = activity.statuses.filter((status) =>
     ['process', 'completed'].includes(status.key),
   )
   const latestRequestStatus =
-    requestStatusMap[activity.latestRequest.status] || requestStatusMap.pending
+    requestStatusColorMap[activity.latestRequest.status] ||
+    requestStatusColorMap.pending
 
   return (
     <Card className="h-full" variant="outlined">
-      <h2 className="mb-5 text-lg font-bold text-slate-950">Aktivitas Saya</h2>
+      <h2 className="mb-5 text-lg font-bold text-slate-950">
+        {t('dashboard.sections.myActivity')}
+      </h2>
       <div className="mb-5 flex items-center justify-between">
-        <span className="text-sm font-bold text-slate-800">Barang Saya</span>
+        <span className="text-sm font-bold text-slate-800">
+          {t('dashboard.labels.myItems')}
+        </span>
         <span className="text-xs font-bold text-sky-700">
-          {activity.listingsTotal} Total
+          {activity.listingsTotal} {t('dashboard.labels.total')}
         </span>
       </div>
       <div className="mb-6 grid grid-cols-2 gap-3">
@@ -57,7 +61,7 @@ export function MyActivityCard({ activity }) {
       <div className="flex items-center justify-between border-t border-slate-100 pt-4">
         <div>
           <p className="mb-2 text-sm font-bold text-slate-800">
-            Permintaan Saya
+            {t('dashboard.labels.myRequests')}
           </p>
           <p className="m-0 text-sm text-slate-600">
             {activity.latestRequest.itemName}
@@ -65,10 +69,10 @@ export function MyActivityCard({ activity }) {
         </div>
         <div className="text-right">
           <p className="mb-2 text-xs font-bold text-sky-700">
-            {activity.requestTotal} Aktif
+            {activity.requestTotal} {t('dashboard.labels.active')}
           </p>
           <Tag color={latestRequestStatus.color}>
-            {latestRequestStatus.label}
+            {t(`dashboard.requestActions.${activity.latestRequest.status}`)}
           </Tag>
         </div>
       </div>

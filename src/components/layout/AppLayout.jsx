@@ -6,6 +6,7 @@ import {
   DashboardOutlined,
   FileTextOutlined,
   GiftOutlined,
+  GlobalOutlined,
   HeartOutlined,
   InboxOutlined,
   MessageOutlined,
@@ -13,8 +14,10 @@ import {
   SettingOutlined,
 } from '@ant-design/icons'
 import { PageContainer, ProLayout } from '@ant-design/pro-components'
-import { Avatar, Badge, Button, Input, Spin, Tooltip, theme } from 'antd'
-import { useState } from 'react'
+import { Avatar, Badge, Button, Input, Select, Spin, Tooltip, theme } from 'antd'
+import { useMemo, useState } from 'react'
+import { useI18n } from '@/i18n/useI18n'
+import { supportedLanguages } from '@/i18n/translations'
 import {
   Link,
   Outlet,
@@ -32,16 +35,16 @@ const sidebarIconMap = {
   saved: <HeartOutlined />,
 }
 
-const menuList = sideNavigationItems.map((item) => ({
-  name: item.label,
-  path: item.path,
-  icon: sidebarIconMap[item.icon],
-}))
-
-const topNavigationItems = ['Browse', 'Give Away', 'Community', 'Map']
+const topNavigationItems = [
+  { key: 'browse', labelKey: 'app.topNav.browse' },
+  { key: 'giveAway', labelKey: 'app.topNav.giveAway' },
+  { key: 'community', labelKey: 'app.topNav.community' },
+  { key: 'map', labelKey: 'app.topNav.map' },
+]
 
 export function AppLayout() {
   const [collapsed, setCollapsed] = useState(false)
+  const { language, setLanguage, t } = useI18n()
   const location = useLocation()
   const navigate = useNavigate()
   const navigation = useNavigation()
@@ -51,6 +54,24 @@ export function AppLayout() {
     token: { colorBgContainer, colorBgLayout },
   } = theme.useToken()
   const currentYear = new Date().getFullYear()
+  const menuList = useMemo(
+    () =>
+      sideNavigationItems.map((item) => ({
+        name: t(item.labelKey),
+        path: item.path,
+        icon: sidebarIconMap[item.icon],
+      })),
+    [t],
+  )
+  const languageOptions = useMemo(
+    () =>
+      supportedLanguages.map((item) => ({
+        label: item.shortLabel,
+        title: t(item.labelKey),
+        value: item.code,
+      })),
+    [t],
+  )
 
   const navigateToDashboardWithParams = (updates) => {
     const nextParams = new URLSearchParams(
@@ -77,18 +98,18 @@ export function AppLayout() {
     navigateToDashboardWithParams({ q: value.trim(), action: '' })
   }
 
-  const handleTopNavigationClick = (item) => {
-    if (item === 'Give Away') {
+  const handleTopNavigationClick = (itemKey) => {
+    if (itemKey === 'giveAway') {
       navigateToDashboardWithParams({ action: 'upload' })
       return
     }
 
-    if (item === 'Community') {
+    if (itemKey === 'community') {
       navigate(paths.impactStats)
       return
     }
 
-    if (item === 'Map') {
+    if (itemKey === 'map') {
       navigateToDashboardWithParams({ action: 'location' })
       return
     }
@@ -128,7 +149,7 @@ export function AppLayout() {
           <Input
             allowClear
             className="max-w-[320px] rounded-xl bg-slate-50"
-            placeholder="Search item..."
+            placeholder={t('app.searchPlaceholder')}
             prefix={<SearchOutlined className="text-slate-400" />}
             value={searchParams.get('q') || ''}
             variant="filled"
@@ -138,25 +159,36 @@ export function AppLayout() {
             {topNavigationItems.map((item) => (
               <button
                 className={`border-0 bg-transparent px-0 py-4 font-[inherit] ${
-                  item === 'Browse' && location.pathname === paths.dashboard
+                  item.key === 'browse' && location.pathname === paths.dashboard
                     ? 'border-b-2 border-sky-700 text-sky-700'
                     : 'text-slate-600'
                 }`}
-                key={item}
+                key={item.key}
                 type="button"
-                onClick={() => handleTopNavigationClick(item)}
+                onClick={() => handleTopNavigationClick(item.key)}
               >
-                {item}
+                {t(item.labelKey)}
               </button>
             ))}
           </nav>
         </div>
       )}
       actionsRender={() => [
-        <Tooltip key="notifications" title="Notifikasi">
+        <Tooltip key="language" title={t('app.language.label')}>
+          <Select
+            aria-label={t('app.language.label')}
+            className="w-20"
+            options={languageOptions}
+            prefix={<GlobalOutlined />}
+            size="middle"
+            value={language}
+            onChange={setLanguage}
+          />
+        </Tooltip>,
+        <Tooltip key="notifications" title={t('app.actions.notifications')}>
           <Badge dot>
             <Button
-              aria-label="Notifikasi"
+              aria-label={t('app.actions.notifications')}
               icon={<BellOutlined />}
               shape="circle"
               size="middle"
@@ -164,18 +196,18 @@ export function AppLayout() {
             />
           </Badge>
         </Tooltip>,
-        <Tooltip key="messages" title="Pesan">
+        <Tooltip key="messages" title={t('app.actions.messages')}>
           <Button
-            aria-label="Pesan"
+            aria-label={t('app.actions.messages')}
             icon={<MessageOutlined />}
             shape="circle"
             size="middle"
             type="text"
           />
         </Tooltip>,
-        <Tooltip key="settings" title="Pengaturan">
+        <Tooltip key="settings" title={t('app.actions.settings')}>
           <Button
-            aria-label="Pengaturan"
+            aria-label={t('app.actions.settings')}
             icon={<SettingOutlined />}
             shape="circle"
             size="middle"
@@ -195,8 +227,12 @@ export function AppLayout() {
       menuExtraRender={(props) =>
         props.collapsed ? null : (
           <div className="px-5 pb-4 pt-2">
-            <p className="mb-1 text-lg font-bold text-sky-700">Welcome back</p>
-            <p className="m-0 text-sm text-slate-500">Ready to share today?</p>
+            <p className="mb-1 text-lg font-bold text-sky-700">
+              {t('app.menuExtra.title')}
+            </p>
+            <p className="m-0 text-sm text-slate-500">
+              {t('app.menuExtra.subtitle')}
+            </p>
           </div>
         )
       }
@@ -224,7 +260,7 @@ export function AppLayout() {
         <Spin
           fullscreen
           spinning={isRouteLoading}
-          description="Memuat halaman"
+          description={t('app.loadingPage')}
           delay={150}
         />
         <Outlet />

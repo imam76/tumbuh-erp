@@ -1,11 +1,5 @@
 import { Avatar, Button, Card, Tag } from 'antd'
-
-const statusLabelMap = {
-  new: 'NEW',
-  pending: 'PENDING',
-  approved: 'APPROVED',
-  rejected: 'REJECTED',
-}
+import { useI18n } from '@/i18n/useI18n'
 
 const statusColorMap = {
   new: 'red',
@@ -15,6 +9,7 @@ const statusColorMap = {
 }
 
 export function IncomingRequestsCard({ requests, onApprove, onReject }) {
+  const { t } = useI18n()
   const newRequestCount = requests.filter((request) => request.status === 'new')
     .length
 
@@ -22,10 +17,12 @@ export function IncomingRequestsCard({ requests, onApprove, onReject }) {
     <Card className="h-full" variant="outlined">
       <div className="mb-5 flex items-center justify-between gap-3">
         <h2 className="m-0 text-lg font-bold text-slate-950">
-          Permintaan Masuk
+          {t('dashboard.sections.incomingRequests')}
         </h2>
         {newRequestCount > 0 ? (
-          <Tag color="red">{newRequestCount} NEW</Tag>
+          <Tag color="red">
+            {newRequestCount} {t('dashboard.requestStatuses.new')}
+          </Tag>
         ) : null}
       </div>
       <div className="space-y-3">
@@ -43,14 +40,14 @@ export function IncomingRequestsCard({ requests, onApprove, onReject }) {
                   {request.requester}
                 </p>
                 <p className="m-0 text-xs text-slate-500">
-                  Meminta: {request.itemName}
+                  {t('dashboard.labels.requested')}: {request.itemName}
                 </p>
               </div>
               <Tag
                 className="ml-auto"
                 color={statusColorMap[request.status]}
               >
-                {statusLabelMap[request.status]}
+                {t(`dashboard.requestStatuses.${request.status}`)}
               </Tag>
             </div>
             <p className="mb-4 text-sm italic leading-6 text-slate-600">
@@ -63,10 +60,10 @@ export function IncomingRequestsCard({ requests, onApprove, onReject }) {
                   type="primary"
                   onClick={() => onApprove(request.id)}
                 >
-                  Setujui
+                  {t('dashboard.actions.approve')}
                 </Button>
                 <Button size="middle" onClick={() => onReject(request.id)}>
-                  Tolak
+                  {t('dashboard.actions.reject')}
                 </Button>
               </div>
             ) : null}

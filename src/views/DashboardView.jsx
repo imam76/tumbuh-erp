@@ -2,6 +2,7 @@ import { App as AntdApp, Modal, Select } from 'antd'
 import { useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { useAmbilAjaDashboard } from '@/hooks/useAmbilAjaDashboard'
+import { useI18n } from '@/i18n/useI18n'
 import { CommunityImpactCard } from '@/views/dashboard/CommunityImpactCard'
 import { DashboardHero } from '@/views/dashboard/DashboardHero'
 import { IncomingRequestsCard } from '@/views/dashboard/IncomingRequestsCard'
@@ -12,6 +13,7 @@ import { UploadItemModal } from '@/views/dashboard/UploadItemModal'
 
 export function DashboardView() {
   const { message } = AntdApp.useApp()
+  const { t } = useI18n()
   const [searchParams, setSearchParams] = useSearchParams()
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false)
@@ -53,7 +55,7 @@ export function DashboardView() {
     return listings
       .filter((item) => {
         const matchesCategory =
-          !selectedCategoryLabel || item.category === selectedCategoryLabel
+          !selectedCategoryKey || item.categoryKey === selectedCategoryKey
         const matchesSearch =
           !normalizedSearch ||
           [item.title, item.category, item.location, item.condition].some(
@@ -68,7 +70,7 @@ export function DashboardView() {
 
         return secondIsNear - firstIsNear
       })
-  }, [listings, searchTerm, selectedCategoryLabel, user.location])
+  }, [listings, searchTerm, selectedCategoryKey, user.location])
 
   const updateSearchParam = (key, value) => {
     const nextParams = new URLSearchParams(searchParams)
@@ -121,7 +123,9 @@ export function DashboardView() {
 
     setIsUploadModalOpen(false)
     clearActionParam()
-    message.success(`${newListing.title} berhasil diupload`)
+    message.success(
+      t('dashboard.messages.uploadSuccess', { title: newListing.title }),
+    )
     scrollToItems()
   }
 
@@ -147,7 +151,9 @@ export function DashboardView() {
     setIsLocationModalOpen(false)
     setDraftLocation('')
     clearActionParam()
-    message.success(`Lokasi diubah ke ${nextLocation}`)
+    message.success(
+      t('dashboard.messages.locationChanged', { location: nextLocation }),
+    )
   }
 
   const handleCloseLocationModal = () => {
@@ -160,11 +166,13 @@ export function DashboardView() {
     const requestedItem = handleRequestItem(itemId)
 
     if (requestedItem) {
-      message.success(`Permintaan untuk ${requestedItem.title} dikirim`)
+      message.success(
+        t('dashboard.messages.requestSent', { title: requestedItem.title }),
+      )
       return
     }
 
-    message.info('Barang ini sudah masuk proses')
+    message.info(t('dashboard.messages.alreadyInProcess'))
   }
 
   const handleSaveListing = (itemId) => {
@@ -176,8 +184,8 @@ export function DashboardView() {
 
     message.success(
       updatedItem.saved
-        ? `${updatedItem.title} disimpan`
-        : `${updatedItem.title} dihapus dari simpanan`,
+        ? t('dashboard.messages.saved', { title: updatedItem.title })
+        : t('dashboard.messages.unsaved', { title: updatedItem.title }),
     )
   }
 
@@ -185,7 +193,11 @@ export function DashboardView() {
     const updatedRequest = handleApproveRequest(requestId)
 
     if (updatedRequest) {
-      message.success(`Permintaan ${updatedRequest.requester} disetujui`)
+      message.success(
+        t('dashboard.messages.requestApproved', {
+          requester: updatedRequest.requester,
+        }),
+      )
     }
   }
 
@@ -193,7 +205,11 @@ export function DashboardView() {
     const updatedRequest = handleRejectRequest(requestId)
 
     if (updatedRequest) {
-      message.info(`Permintaan ${updatedRequest.requester} ditolak`)
+      message.info(
+        t('dashboard.messages.requestRejected', {
+          requester: updatedRequest.requester,
+        }),
+      )
     }
   }
 
@@ -245,10 +261,10 @@ export function DashboardView() {
       />
 
       <Modal
-        cancelText="Batal"
-        okText="Simpan"
+        cancelText={t('dashboard.actions.cancel')}
+        okText={t('dashboard.actions.save')}
         open={isLocationOpen}
-        title="Ubah Lokasi"
+        title={t('dashboard.modals.locationTitle')}
         onCancel={handleCloseLocationModal}
         onOk={handleSaveLocation}
       >

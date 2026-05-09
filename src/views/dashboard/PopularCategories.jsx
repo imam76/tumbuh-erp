@@ -7,6 +7,7 @@ import {
   SkinOutlined,
   SmileOutlined,
 } from '@ant-design/icons'
+import { useI18n } from '@/i18n/useI18n'
 
 const iconMap = {
   furniture: <ShopOutlined />,
@@ -32,18 +33,20 @@ export function PopularCategories({
   onSelectCategory,
   onShowAll,
 }) {
+  const { t } = useI18n()
+
   return (
     <section>
       <div className="mb-5 flex items-center justify-between gap-4">
         <h2 className="m-0 text-2xl font-bold text-slate-950">
-          Kategori Populer
+          {t('dashboard.sections.popularCategories')}
         </h2>
         <button
           className="border-0 bg-transparent text-sm font-bold text-sky-700"
           type="button"
           onClick={onShowAll}
         >
-          Lihat Semua
+          {t('dashboard.actions.showAll')}
         </button>
       </div>
       <div className="grid grid-cols-6 gap-4 max-xl:grid-cols-3 max-md:grid-cols-2">

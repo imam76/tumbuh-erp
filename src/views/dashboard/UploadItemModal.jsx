@@ -1,12 +1,7 @@
 import { Form, Input, Modal, Select } from 'antd'
-import { useEffect } from 'react'
-
-const conditionOptions = [
-  { label: 'Kondisi baik', value: 'Kondisi baik' },
-  { label: 'Terawat', value: 'Terawat' },
-  { label: 'Lengkap', value: 'Lengkap' },
-  { label: 'Perlu dibersihkan', value: 'Perlu dibersihkan' },
-]
+import { useEffect, useMemo } from 'react'
+import { useI18n } from '@/i18n/useI18n'
+import { conditionKeys } from '@/utils/dashboardModules'
 
 export function UploadItemModal({
   categories,
@@ -17,11 +12,20 @@ export function UploadItemModal({
   open,
 }) {
   const [form] = Form.useForm()
+  const { t } = useI18n()
+  const conditionOptions = useMemo(
+    () =>
+      conditionKeys.map((key) => ({
+        label: t(`dashboard.conditions.${key}`),
+        value: key,
+      })),
+    [t],
+  )
 
   useEffect(() => {
     if (open) {
       form.setFieldsValue({
-        condition: conditionOptions[0].value,
+        conditionKey: conditionKeys[0],
         location: defaultLocation,
       })
     }
@@ -34,11 +38,11 @@ export function UploadItemModal({
 
   return (
     <Modal
-      cancelText="Batal"
+      cancelText={t('dashboard.actions.cancel')}
       destroyOnHidden
-      okText="Upload"
+      okText={t('dashboard.actions.upload')}
       open={open}
-      title="Upload Barang"
+      title={t('dashboard.modals.uploadTitle')}
       width={560}
       onCancel={onCancel}
       onOk={() => form.submit()}
@@ -50,52 +54,67 @@ export function UploadItemModal({
         onFinish={handleFinish}
       >
         <Form.Item
-          label="Nama barang"
+          label={t('dashboard.labels.itemName')}
           name="title"
           rules={[
-            { required: true, message: 'Nama barang wajib diisi' },
-            { min: 3, message: 'Nama barang minimal 3 karakter' },
+            {
+              required: true,
+              message: t('dashboard.validation.itemNameRequired'),
+            },
+            { min: 3, message: t('dashboard.validation.itemNameMin') },
           ]}
         >
-          <Input placeholder="Contoh: Meja belajar kayu" />
+          <Input placeholder={t('dashboard.placeholders.itemName')} />
         </Form.Item>
 
         <div className="grid grid-cols-2 gap-4 max-md:grid-cols-1">
           <Form.Item
-            label="Kategori"
-            name="category"
-            rules={[{ required: true, message: 'Pilih kategori' }]}
+            label={t('dashboard.labels.category')}
+            name="categoryKey"
+            rules={[
+              {
+                required: true,
+                message: t('dashboard.validation.categoryRequired'),
+              },
+            ]}
           >
             <Select
               options={categories.map((category) => ({
                 label: category.label,
-                value: category.label,
+                value: category.key,
               }))}
-              placeholder="Pilih kategori"
+              placeholder={t('dashboard.placeholders.selectCategory')}
             />
           </Form.Item>
 
           <Form.Item
-            label="Kondisi"
-            name="condition"
-            rules={[{ required: true, message: 'Pilih kondisi' }]}
+            label={t('dashboard.labels.condition')}
+            name="conditionKey"
+            rules={[
+              {
+                required: true,
+                message: t('dashboard.validation.conditionRequired'),
+              },
+            ]}
           >
             <Select options={conditionOptions} />
           </Form.Item>
         </div>
 
         <Form.Item
-          label="Lokasi ambil"
+          label={t('dashboard.labels.pickupLocation')}
           name="location"
-          rules={[{ required: true, message: 'Pilih lokasi' }]}
+          rules={[
+            { required: true, message: t('dashboard.validation.locationRequired') },
+          ]}
         >
           <Select options={locations.map((value) => ({ label: value, value }))} />
         </Form.Item>
 
-        <Form.Item label="Catatan" name="note">
+        <Form.Item label={t('dashboard.labels.note')} name="note">
           <Input.TextArea
             autoSize={{ minRows: 3, maxRows: 5 }}
-            placeholder="Tambahkan detail singkat kondisi atau jadwal ambil"
+            placeholder={t('dashboard.placeholders.note')}
           />
         </Form.Item>
       </Form>

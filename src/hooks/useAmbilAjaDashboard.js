@@ -1,14 +1,6 @@
-import { useMemo, useState } from 'react'
-import { dashboardData } from '@/utils/dashboardModules'
-
-const categoryVisualMap = {
-  'Bayi & Anak': 'baby',
-  Buku: 'shelf',
-  Elektronik: 'electronics',
-  Furniture: 'desk',
-  Pakaian: 'clothes',
-  'Rumah Tangga': 'tableware',
-}
+import { useCallback, useMemo, useState } from 'react'
+import { useI18n } from '@/i18n/useI18n'
+import { categoryVisualMap, dashboardData } from '@/utils/dashboardModules'
 
 function createListingId() {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -19,10 +11,36 @@ function createListingId() {
 }
 
 export function useAmbilAjaDashboard() {
+  const { t } = useI18n()
   const [user, setUser] = useState(dashboardData.user)
   const [listings, setListings] = useState(dashboardData.listings)
   const [incomingRequests, setIncomingRequests] = useState(
     dashboardData.incomingRequests,
+  )
+
+  const getListingTitle = useCallback(
+    (item) => item.title ?? t(`dashboard.data.listings.${item.titleKey}`),
+    [t],
+  )
+
+  const translateListing = useCallback(
+    (item) => ({
+      ...item,
+      title: getListingTitle(item),
+      category: t(`dashboard.categories.${item.categoryKey}`),
+      condition: t(`dashboard.conditions.${item.conditionKey}`),
+      timeAgo: item.timeAgo ?? t(`dashboard.timeAgo.${item.timeAgoKey}`),
+    }),
+    [getListingTitle, t],
+  )
+
+  const translateRequest = useCallback(
+    (request) => ({
+      ...request,
+      itemName: t(`dashboard.data.requests.${request.itemNameKey}`),
+      message: t(`dashboard.data.requests.${request.messageKey}`),
+    }),
+    [t],
   )
 
   const handleToggleSave = (itemId) => {
@@ -39,7 +57,7 @@ export function useAmbilAjaDashboard() {
       ),
     )
 
-    return updatedItem
+    return translateListing(updatedItem)
   }
 
   const handleRequestItem = (itemId) => {
@@ -70,7 +88,7 @@ export function useAmbilAjaDashboard() {
       }),
     )
 
-    return requestedItem
+    return translateListing(requestedItem)
   }
 
   const handleApproveRequest = (requestId) => {
@@ -91,7 +109,7 @@ export function useAmbilAjaDashboard() {
       ),
     )
 
-    return updatedRequest
+    return translateRequest(updatedRequest)
   }
 
   const handleRejectRequest = (requestId) => {
@@ -112,28 +130,28 @@ export function useAmbilAjaDashboard() {
       ),
     )
 
-    return updatedRequest
+    return translateRequest(updatedRequest)
   }
 
   const handleCreateListing = (values) => {
     const nextListing = {
       id: createListingId(),
       title: values.title.trim(),
-      category: values.category,
+      categoryKey: values.categoryKey,
       location: values.location,
-      timeAgo: 'Baru saja',
-      condition: values.condition,
+      timeAgoKey: 'justNow',
+      conditionKey: values.conditionKey,
       availability: 'tersedia',
       requestStatus: null,
       requestedByMe: false,
       saved: false,
-      visual: categoryVisualMap[values.category] || 'desk',
+      visual: categoryVisualMap[values.categoryKey] || 'desk',
       createdByMe: true,
     }
 
     setListings((currentListings) => [nextListing, ...currentListings])
 
-    return nextListing
+    return translateListing(nextListing)
   }
 
   const handleChangeLocation = (location) => {
@@ -157,25 +175,66 @@ export function useAmbilAjaDashboard() {
         dashboardData.activity.requestTotal + requestsByMe.length,
       statuses: dashboardData.activity.statuses.map((status) =>
         status.key === 'pending'
-          ? { ...status, value: status.value + pendingRequestsByMe.length }
-          : status,
+          ? {
+              ...status,
+              label: t(`dashboard.activityStatuses.${status.key}`),
+              value: status.value + pendingRequestsByMe.length,
+            }
+          : {
+              ...status,
+              label: t(`dashboard.activityStatuses.${status.key}`),
+            },
       ),
       latestRequest: pendingRequestsByMe[0]
         ? {
-            itemName: pendingRequestsByMe[0].title,
+            itemName: getListingTitle(pendingRequestsByMe[0]),
             status: pendingRequestsByMe[0].requestStatus,
           }
-        : dashboardData.activity.latestRequest,
+        : {
+            itemName: t(
+              `dashboard.data.requests.${dashboardData.activity.latestRequest.itemNameKey}`,
+            ),
+            status: dashboardData.activity.latestRequest.status,
+          },
     }
-  }, [listings])
+  }, [getListingTitle, listings, t])
+
+  const categories = useMemo(
+    () =>
+      dashboardData.categories.map((category) => ({
+        ...category,
+        label: t(`dashboard.categories.${category.key}`),
+      })),
+    [t],
+  )
+
+  const communityImpact = useMemo(
+    () =>
+      dashboardData.communityImpact.map((item) => ({
+        ...item,
+        label: t(`dashboard.data.impact.${item.key}`),
+        value: t(`dashboard.data.impactValues.${item.key}`),
+      })),
+    [t],
+  )
+
+  const hero = useMemo(
+    () => ({
+      title: t('dashboard.hero.title'),
+      description: t('dashboard.hero.description'),
+      primaryAction: t('dashboard.hero.primaryAction'),
+      secondaryAction: t('dashboard.hero.secondaryAction'),
+    }),
+    [t],
+  )
 
   return {
     activity,
-    categories: dashboardData.categories,
-    communityImpact: dashboardData.communityImpact,
-    hero: dashboardData.hero,
-    incomingRequests,
-    listings,
+    categories,
+    communityImpact,
+    hero,
+    incomingRequests: incomingRequests.map(translateRequest),
+    listings: listings.map(translateListing),
     user,
     handleApproveRequest,
     handleChangeLocation,

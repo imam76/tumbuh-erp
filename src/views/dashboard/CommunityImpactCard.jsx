@@ -4,6 +4,7 @@ import {
   TeamOutlined,
 } from '@ant-design/icons'
 import { Card } from 'antd'
+import { useI18n } from '@/i18n/useI18n'
 
 const iconMap = {
   gift: <GiftOutlined />,
@@ -18,10 +19,12 @@ const toneClassMap = {
 }
 
 export function CommunityImpactCard({ stats }) {
+  const { t } = useI18n()
+
   return (
     <Card className="h-full" variant="outlined">
       <h2 className="mb-5 text-lg font-bold text-slate-950">
-        Community Impact
+        {t('dashboard.sections.communityImpact')}
       </h2>
       <div className="space-y-4">
         {stats.map((item) => (

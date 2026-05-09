@@ -5,25 +5,13 @@ import {
   HeartOutlined,
 } from '@ant-design/icons'
 import { Button, Card } from 'antd'
+import { useI18n } from '@/i18n/useI18n'
 
 const availabilityClassMap = {
   tersedia: 'bg-emerald-700 text-white',
   proses: 'bg-sky-700 text-white',
   pending: 'bg-amber-500 text-white',
   selesai: 'bg-slate-500 text-white',
-}
-
-const availabilityLabelMap = {
-  tersedia: 'TERSEDIA',
-  proses: 'PROSES',
-  pending: 'PENDING',
-  selesai: 'SELESAI',
-}
-
-const requestActionMap = {
-  process: 'Diproses',
-  pending: 'Menunggu',
-  completed: 'Selesai',
 }
 
 function ProductVisual({ visual }) {
@@ -98,11 +86,13 @@ function ProductVisual({ visual }) {
 }
 
 export function ItemListingCard({ item, onRequestItem, onToggleSave }) {
+  const { language, t } = useI18n()
+  const locale = language === 'id' ? 'id-ID' : 'en-US'
   const actionLabel = item.createdByMe
-    ? 'Barang Saya'
+    ? t('dashboard.actions.myItem')
     : item.requestStatus
-      ? requestActionMap[item.requestStatus]
-      : 'Minta Barang'
+      ? t(`dashboard.requestActions.${item.requestStatus}`)
+      : t('dashboard.actions.requestItem')
   const isActionDisabled = Boolean(item.requestStatus || item.createdByMe)
 
   return (
@@ -119,10 +109,10 @@ export function ItemListingCard({ item, onRequestItem, onToggleSave }) {
               availabilityClassMap[item.availability]
             }`}
           >
-            {availabilityLabelMap[item.availability]}
+            {t(`dashboard.availability.${item.availability}`)}
           </span>
           <span className="rounded-md bg-white px-3 py-1 text-[10px] font-bold text-sky-700">
-            {item.condition.toUpperCase()}
+            {item.condition.toLocaleUpperCase(locale)}
           </span>
         </div>
       </div>
@@ -132,7 +122,7 @@ export function ItemListingCard({ item, onRequestItem, onToggleSave }) {
             {item.title}
           </h3>
           <Button
-            aria-label={`Simpan ${item.title}`}
+            aria-label={t('dashboard.actions.save')}
             icon={
               item.saved ? (
                 <HeartFilled className="text-rose-500" />
