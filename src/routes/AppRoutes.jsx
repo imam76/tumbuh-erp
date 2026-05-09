@@ -10,11 +10,39 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        ...lazyRoute(() => import('@/views/HomeView'), 'HomeView'),
+        element: <Navigate to={paths.dashboard} replace />,
       },
       {
         path: 'dashboard',
         ...lazyRoute(() => import('@/views/DashboardView'), 'DashboardView'),
+      },
+      {
+        path: 'my-listings',
+        ...lazyRoute(
+          () => import('@/views/SectionPlaceholderView'),
+          'SectionPlaceholderView',
+        ),
+      },
+      {
+        path: 'requests',
+        ...lazyRoute(
+          () => import('@/views/SectionPlaceholderView'),
+          'SectionPlaceholderView',
+        ),
+      },
+      {
+        path: 'impact-stats',
+        ...lazyRoute(
+          () => import('@/views/SectionPlaceholderView'),
+          'SectionPlaceholderView',
+        ),
+      },
+      {
+        path: 'saved-items',
+        ...lazyRoute(
+          () => import('@/views/SectionPlaceholderView'),
+          'SectionPlaceholderView',
+        ),
       },
       {
         path: 'home',

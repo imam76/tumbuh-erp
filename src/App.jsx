@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { ConfigProvider } from 'antd'
+import { App as AntdApp, ConfigProvider } from 'antd'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { usePrefersDark } from '@/hooks/usePrefersDark'
 import { createAntdTheme } from '@/utils/createAntdTheme'
@@ -10,7 +10,9 @@ function App() {
 
   return (
     <ConfigProvider componentSize="large" theme={antdTheme}>
-      <AppLayout />
+      <AntdApp>
+        <AppLayout />
+      </AntdApp>
     </ConfigProvider>
   )
 }

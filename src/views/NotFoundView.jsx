@@ -10,10 +10,10 @@ export function NotFoundView() {
       <Result
         status="404"
         title="Halaman tidak ditemukan."
-        subTitle="Route ini belum tersedia. Kembali ke halaman utama untuk melanjutkan."
+        subTitle="Route ini belum tersedia. Kembali ke dashboard untuk melanjutkan."
         extra={
-          <Button type="primary" onClick={() => navigate(paths.home)}>
-            Kembali ke Home
+          <Button type="primary" onClick={() => navigate(paths.dashboard)}>
+            Kembali ke Dashboard
           </Button>
         }
       />

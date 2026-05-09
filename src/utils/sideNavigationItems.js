@@ -1,39 +1,38 @@
 import { paths } from '@/routes/paths'
 
-export const sideNavigationSections = [
+export const sideNavigationItems = [
   {
-    key: 'workspace',
-    label: 'Workspace',
-    children: [
-      {
-        key: 'dashboard',
-        label: 'Dashboard',
-        path: paths.dashboard,
-      },
-    ],
+    key: 'dashboard',
+    label: 'Dashboard',
+    path: paths.dashboard,
+    icon: 'dashboard',
   },
   {
-    key: 'erp-modules',
-    label: 'Modul ERP',
-    children: [
-      {
-        key: 'sales',
-        label: 'Sales',
-      },
-      {
-        key: 'inventory',
-        label: 'Inventory',
-      },
-      {
-        key: 'finance',
-        label: 'Finance',
-      },
-    ],
+    key: 'my-listings',
+    label: 'My Listings',
+    path: paths.myListings,
+    icon: 'listings',
+  },
+  {
+    key: 'requests',
+    label: 'Requests',
+    path: paths.requests,
+    icon: 'requests',
+  },
+  {
+    key: 'impact-stats',
+    label: 'Impact Stats',
+    path: paths.impactStats,
+    icon: 'impact',
+  },
+  {
+    key: 'saved-items',
+    label: 'Saved Items',
+    path: paths.savedItems,
+    icon: 'saved',
   },
 ]
 
 export function findSideNavigationItem(pathname) {
-  return sideNavigationSections
-    .flatMap((section) => section.children)
-    .find((item) => item.path === pathname)
+  return sideNavigationItems.find((item) => item.path === pathname)
 }
