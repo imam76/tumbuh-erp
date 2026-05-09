@@ -54,6 +54,8 @@ export function AppLayout() {
     token: { colorBgContainer, colorBgLayout },
   } = theme.useToken()
   const currentYear = new Date().getFullYear()
+  const sidebarPathname =
+    location.pathname === paths.createListing ? paths.myListings : location.pathname
   const menuList = useMemo(
     () =>
       sideNavigationItems.map((item) => ({
@@ -100,7 +102,7 @@ export function AppLayout() {
 
   const handleTopNavigationClick = (itemKey) => {
     if (itemKey === 'giveAway') {
-      navigateToDashboardWithParams({ action: 'upload' })
+      navigate(paths.createListing)
       return
     }
 
@@ -130,7 +132,7 @@ export function AppLayout() {
         </div>
       )}
       layout="side"
-      location={{ pathname: location.pathname }}
+      location={{ pathname: sidebarPathname }}
       logo={false}
       title={false}
       headerTitleRender={() => (

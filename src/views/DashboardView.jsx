@@ -1,21 +1,21 @@
 import { App as AntdApp, Modal, Select } from 'antd'
 import { useMemo, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 import { useAmbilAjaDashboard } from '@/hooks/useAmbilAjaDashboard'
 import { useI18n } from '@/i18n/useI18n'
+import { paths } from '@/routes/paths'
 import { CommunityImpactCard } from '@/views/dashboard/CommunityImpactCard'
 import { DashboardHero } from '@/views/dashboard/DashboardHero'
 import { IncomingRequestsCard } from '@/views/dashboard/IncomingRequestsCard'
 import { MyActivityCard } from '@/views/dashboard/MyActivityCard'
 import { NearbyItemsSection } from '@/views/dashboard/NearbyItemsSection'
 import { PopularCategories } from '@/views/dashboard/PopularCategories'
-import { UploadItemModal } from '@/views/dashboard/UploadItemModal'
 
 export function DashboardView() {
   const { message } = AntdApp.useApp()
   const { t } = useI18n()
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false)
   const [draftLocation, setDraftLocation] = useState('')
   const itemsSectionRef = useRef(null)
@@ -29,7 +29,6 @@ export function DashboardView() {
     user,
     handleApproveRequest,
     handleChangeLocation,
-    handleCreateListing,
     handleRejectRequest,
     handleRequestItem,
     handleToggleSave,
@@ -41,7 +40,6 @@ export function DashboardView() {
   )
   const selectedCategoryLabel = selectedCategory?.label || ''
   const action = searchParams.get('action')
-  const isUploadOpen = isUploadModalOpen || action === 'upload'
   const isLocationOpen = isLocationModalOpen || action === 'location'
 
   const locationOptions = useMemo(
@@ -116,22 +114,6 @@ export function DashboardView() {
     nextParams.delete('category')
     nextParams.delete('q')
     setSearchParams(nextParams)
-  }
-
-  const handleSubmitUpload = (values) => {
-    const newListing = handleCreateListing(values)
-
-    setIsUploadModalOpen(false)
-    clearActionParam()
-    message.success(
-      t('dashboard.messages.uploadSuccess', { title: newListing.title }),
-    )
-    scrollToItems()
-  }
-
-  const handleCloseUploadModal = () => {
-    setIsUploadModalOpen(false)
-    clearActionParam()
   }
 
   const handleOpenLocationModal = () => {
@@ -218,7 +200,7 @@ export function DashboardView() {
       <DashboardHero
         hero={hero}
         onBrowseItems={scrollToItems}
-        onUploadItem={() => setIsUploadModalOpen(true)}
+        onUploadItem={() => navigate(paths.createListing)}
       />
 
       <section className="grid grid-cols-3 gap-4 max-xl:grid-cols-2 max-lg:grid-cols-1">
@@ -249,15 +231,6 @@ export function DashboardView() {
         onClearFilters={handleClearFilters}
         onRequestItem={handleRequestListing}
         onToggleSave={handleSaveListing}
-      />
-
-      <UploadItemModal
-        categories={categories}
-        defaultLocation={user.location}
-        locations={locationOptions}
-        open={isUploadOpen}
-        onCancel={handleCloseUploadModal}
-        onSubmit={handleSubmitUpload}
       />
 
       <Modal

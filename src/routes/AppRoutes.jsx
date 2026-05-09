@@ -18,9 +18,13 @@ export const router = createBrowserRouter([
       },
       {
         path: 'my-listings',
+        ...lazyRoute(() => import('@/views/MyListings'), 'MyListings'),
+      },
+      {
+        path: 'my-listings/new',
         ...lazyRoute(
-          () => import('@/views/SectionPlaceholderView'),
-          'SectionPlaceholderView',
+          () => import('@/views/CreateListingView'),
+          'CreateListingView',
         ),
       },
       {
